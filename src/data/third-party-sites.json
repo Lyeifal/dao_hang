@@ -1,0 +1,12 @@
+[
+  { "name": "GitHub", "url": "https://github.com", "icon": "💻", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-gray-100/30 text-gray-700" },
+  { "name": "Hugging Face", "url": "https://huggingface.co", "icon": "🤗", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-yellow-100/30 text-yellow-700" },
+  { "name": "Civitai", "url": "https://civitai.com", "icon": "🎨", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-green-100/30 text-green-700" },
+  { "name": "ChatGPT", "url": "https://chatgpt.com", "icon": "💬", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-teal-100/30 text-teal-700" },
+  { "name": "Cloudflare", "url": "https://dash.cloudflare.com", "icon": "☁️", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-orange-100/30 text-orange-700" },
+  { "name": "Spaceship", "url": "https://www.spaceship.com", "icon": "🚀", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-indigo-100/30 text-indigo-700" },
+  { "name": "阿里云", "url": "https://www.aliyun.com", "icon": "☁️", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-red-100/30 text-red-700" },
+  { "name": "抖老板", "url": "https://www.doulaoban.com", "icon": "😄", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-pink-100/30 text-pink-700" },
+  { "name": "Qoph", "url": "https://1.qoph.fun", "icon": "🔗", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-cyan-100/30 text-cyan-700" },
+  { "name": "Bitiful", "url": "https://www.bitiful.com", "icon": "✨", "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]", "iconBg": "bg-rose-100/30 text-rose-700" }
+]

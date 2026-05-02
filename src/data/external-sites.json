@@ -1,0 +1,27 @@
+[
+  {
+    "title": "子站点",
+    "url": "https://xn--dxt.xn--ces63ha5737a.top",
+    "description": "主内容站点，提供核心业务与功能服务",
+    "icon": "🏠",
+    "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]",
+    "iconBg": "bg-rose-100/30 text-rose-600"
+  },
+  {
+    "title": "文档站",
+    "url": "https://xn--7dvp7d.xn--ces63ha5737a.top",
+    "description": "详细技术文档、使用指南与 API 参考手册",
+    "icon": "📚",
+    "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]",
+    "iconBg": "bg-emerald-100/30 text-emerald-600"
+  },
+  {
+    "title": "聚合工具",
+    "url": "/tools",
+    "description": "本站聚合的实用工具与小游戏",
+    "icon": "🔧",
+    "color": "glass-thin hover:scale-[1.02] active:scale-[0.98]",
+    "iconBg": "bg-amber-100/30 text-amber-600",
+    "isInternal": true
+  }
+]
