@@ -40,6 +40,22 @@ const hasHeroBg = false;
         --hero-bg: none;
       }
     </style>
+    <style is:inline>
+      .glass {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 100%);
+        backdrop-filter: blur(10px) saturate(110%);
+        -webkit-backdrop-filter: blur(10px) saturate(110%);
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.50), 0 4px 24px rgba(0, 0, 0, 0.05);
+      }
+      .glass-thin {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+        backdrop-filter: blur(8px) saturate(110%);
+        -webkit-backdrop-filter: blur(8px) saturate(110%);
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45), 0 2px 12px rgba(0, 0, 0, 0.04);
+      }
+    </style>
   </head>
   <body class={`min-h-screen flex flex-col ${pageBg ? 'bg-page' : ''}`} style={pageBg ? `--page-bg: url('${pageBg}')` : undefined}>
     <header class="sticky top-0 z-50 glass">
