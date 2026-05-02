@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allDocs = await getCollection('docs', doc => !doc.data.draft && doc.data.category === 'changelog');
+allDocs.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const levelConfig: Record<string, { label: string; dotColor: string; borderColor: string; bgColor: string }> = {
+  major: { label: '大版本', dotColor: 'bg-blue-500', borderColor: 'border-blue-200', bgColor: 'bg-blue-50/30' },
+  event: { label: '活动', dotColor: 'bg-purple-500', borderColor: 'border-purple-200', bgColor: 'bg-purple-50/30' },
+  minor: { label: '小更新', dotColor: 'bg-gray-400', borderColor: 'border-gray-200', bgColor: 'bg-gray-50/30' },
+};
+---
+
+<Layout title="更新日志 | 导航站" description="版本更新记录与活动公告">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-text mb-3">更新日志</h1>
+      <p class="text-text-muted">版本迭代记录与活动更新</p>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap gap-4 mb-10">
+      <div class="flex items-center gap-2 text-sm text-text-muted">
+        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+        <span>大版本更新</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-text-muted">
+        <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+        <span>活动更新</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-text-muted">
+        <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+        <span>小更新</span>
+      </div>
+    </div>
+
+    {allDocs.length === 0 ? (
+      <div class="p-8 rounded-xl border border-dashed border-border bg-white text-center">
+        <p class="text-text-muted">暂无更新日志</p>
+      </div>
+    ) : (
+      <div class="relative">
+        <!-- 中间竖线 -->
+        <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-border md:-translate-x-1/2"></div>
+
+        <div class="space-y-8">
+          {allDocs.map(doc => {
+            const level = doc.data.level || 'minor';
+            const cfg = levelConfig[level];
+            const isMinor = level === 'minor';
+            return (
+              <div class="relative grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0">
+                <!-- 圆点 -->
+                <div class={`absolute left-4 md:left-1/2 w-3 h-3 rounded-full ${cfg.dotColor} border-2 border-white shadow-sm md:-translate-x-1/2 mt-2 z-10`}></div>
+
+                {isMinor ? (
+                  <>
+                    {/* 左边占位 */}
+                    <div class="hidden md:block"></div>
+                    {/* 右边内容 */}
+                    <div class="pl-10 md:pl-8">
+                      <a
+                        href={`/docs/${doc.id}`}
+                        class={`group block p-5 rounded-xl border ${cfg.borderColor} ${cfg.bgColor} hover:shadow-sm transition-all`}
+                      >
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/80 text-text-muted`}>
+                            {cfg.label}
+                          </span>
+                          <time class="text-xs text-text-muted">
+                            {doc.data.date.toLocaleDateString('zh-CN', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            })}
+                          </time>
+                        </div>
+                        <h3 class="font-semibold text-text group-hover:text-primary transition-colors">
+                          {doc.data.title}
+                        </h3>
+                        {doc.data.description && (
+                          <p class="text-sm text-text-muted mt-1 line-clamp-2">
+                            {doc.data.description}
+                          </p>
+                        )}
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* 左边内容 */}
+                    <div class="pl-10 md:pl-0 md:pr-8 md:text-right">
+                      <a
+                        href={`/docs/${doc.id}`}
+                        class={`group block p-5 rounded-xl border ${cfg.borderColor} ${cfg.bgColor} hover:shadow-sm transition-all`}
+                      >
+                        <div class="flex items-center gap-2 mb-2 md:justify-end">
+                          <span class={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/80 text-text-muted`}>
+                            {cfg.label}
+                          </span>
+                          <time class="text-xs text-text-muted">
+                            {doc.data.date.toLocaleDateString('zh-CN', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            })}
+                          </time>
+                        </div>
+                        <h3 class="font-semibold text-text group-hover:text-primary transition-colors">
+                          {doc.data.title}
+                        </h3>
+                        {doc.data.description && (
+                          <p class="text-sm text-text-muted mt-1 line-clamp-2">
+                            {doc.data.description}
+                          </p>
+                        )}
+                      </a>
+                    </div>
+                    {/* 右边占位 */}
+                    <div class="hidden md:block"></div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
+  </div>
+</Layout>

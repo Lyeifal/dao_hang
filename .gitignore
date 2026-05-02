@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# drafts (only keep README)
+drafts/*.md
+!drafts/README.md

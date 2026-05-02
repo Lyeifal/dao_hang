@@ -1,0 +1,236 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="JSON 格式化 | 工具聚合" description="JSON 美化、压缩与校验工具">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-8">
+      <a href="/tools" class="text-sm text-primary hover:text-primary-dark font-medium mb-4 inline-block">
+        ← 返回工具聚合
+      </a>
+      <h1 class="text-3xl font-bold text-text mb-3">JSON 格式化</h1>
+      <p class="text-text-muted">美化、压缩、转义与校验 JSON 数据，支持搜索定位</p>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+      <button id="formatBtn" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors">美化</button>
+      <button id="compressBtn" class="px-4 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors">压缩</button>
+      <button id="escapeBtn" class="px-4 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors">转义</button>
+      <button id="unescapeBtn" class="px-4 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors">去转义</button>
+      <button id="clearBtn" class="px-4 py-2 rounded-lg bg-white text-text-muted border-2 border-border text-sm font-medium hover:border-red-300 hover:text-red-600 transition-colors">清空</button>
+      <div class="flex-1"></div>
+      <!-- Search -->
+      <div class="flex items-center gap-2">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="搜索关键词..."
+          class="px-3 py-2 rounded-lg border-2 border-border text-sm focus:border-primary focus:outline-none w-40"
+        />
+        <button id="searchBtn" class="px-3 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors">查找</button>
+        <button id="prevBtn" class="px-3 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors" title="上一个">↑</button>
+        <button id="nextBtn" class="px-3 py-2 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors" title="下一个">↓</button>
+        <span id="matchInfo" class="text-xs text-text-muted min-w-[3rem]"></span>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="error" class="hidden p-3 rounded-lg bg-red-50 text-red-600 text-sm mb-4"></div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Input -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-sm font-medium text-text">输入 JSON</label>
+        </div>
+        <textarea
+          id="input"
+          class="flex-1 min-h-[400px] w-full px-4 py-3 rounded-xl border-2 border-border bg-white text-text placeholder:text-text-muted focus:border-primary focus:outline-none resize-y font-mono text-sm"
+          placeholder='{"key": "value", "array": [1, 2, 3]}'
+        ></textarea>
+      </div>
+
+      <!-- Output -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-sm font-medium text-text">结果</label>
+          <button id="copyBtn" class="text-xs text-primary hover:text-primary-dark font-medium">复制结果</button>
+        </div>
+        <textarea
+          id="output"
+          readonly
+          class="flex-1 min-h-[400px] w-full px-4 py-3 rounded-xl border-2 border-border bg-surface-alt text-text focus:border-primary focus:outline-none resize-y font-mono text-sm"
+          placeholder="结果将显示在这里..."
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const formatBtn = document.getElementById('formatBtn');
+    const compressBtn = document.getElementById('compressBtn');
+    const escapeBtn = document.getElementById('escapeBtn');
+    const unescapeBtn = document.getElementById('unescapeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const matchInfo = document.getElementById('matchInfo');
+
+    let matches = [];
+    let currentMatch = -1;
+
+    function showError(msg) {
+      error.textContent = msg;
+      error.classList.remove('hidden');
+    }
+
+    function hideError() {
+      error.classList.add('hidden');
+    }
+
+    function getInput() {
+      const text = input.value.trim();
+      if (!text) {
+        showError('请输入 JSON 内容');
+        return null;
+      }
+      hideError();
+      return text;
+    }
+
+    formatBtn.addEventListener('click', () => {
+      const text = getInput();
+      if (!text) return;
+      try {
+        const obj = JSON.parse(text);
+        output.value = JSON.stringify(obj, null, 2);
+        hideError();
+        doSearch();
+      } catch (e) {
+        showError('JSON 格式错误：' + e.message);
+      }
+    });
+
+    compressBtn.addEventListener('click', () => {
+      const text = getInput();
+      if (!text) return;
+      try {
+        const obj = JSON.parse(text);
+        output.value = JSON.stringify(obj);
+        hideError();
+        doSearch();
+      } catch (e) {
+        showError('JSON 格式错误：' + e.message);
+      }
+    });
+
+    escapeBtn.addEventListener('click', () => {
+      const text = getInput();
+      if (!text) return;
+      output.value = text.replace(/[\\]/g, '\\\\').replace(/["]/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+      doSearch();
+    });
+
+    unescapeBtn.addEventListener('click', () => {
+      const text = getInput();
+      if (!text) return;
+      try {
+        output.value = JSON.parse('"' + text + '"');
+        doSearch();
+      } catch (e) {
+        showError('去转义失败：' + e.message);
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      output.value = '';
+      hideError();
+      searchInput.value = '';
+      matches = [];
+      currentMatch = -1;
+      updateMatchInfo();
+      input.focus();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!output.value) return;
+      try {
+        await navigator.clipboard.writeText(output.value);
+        const original = copyBtn.textContent;
+        copyBtn.textContent = '已复制！';
+        setTimeout(() => copyBtn.textContent = original, 1500);
+      } catch {
+        showError('复制失败，请手动复制');
+      }
+    });
+
+    // Search functionality
+    function doSearch() {
+      const query = searchInput.value.trim();
+      if (!query || !output.value) {
+        matches = [];
+        currentMatch = -1;
+        updateMatchInfo();
+        return;
+      }
+      matches = [];
+      const text = output.value;
+      let idx = text.indexOf(query);
+      while (idx !== -1) {
+        matches.push(idx);
+        idx = text.indexOf(query, idx + query.length);
+      }
+      currentMatch = matches.length > 0 ? 0 : -1;
+      updateMatchInfo();
+      if (currentMatch >= 0) scrollToMatch(currentMatch);
+    }
+
+    function scrollToMatch(index) {
+      if (index < 0 || index >= matches.length) return;
+      const pos = matches[index];
+      const queryLen = searchInput.value.length;
+      output.setSelectionRange(pos, pos + queryLen);
+      output.focus();
+      // Approximate scroll to line
+      const linesBefore = output.value.substring(0, pos).split('\n').length - 1;
+      const lineHeight = 20;
+      output.scrollTop = Math.max(0, linesBefore * lineHeight - output.clientHeight / 2);
+    }
+
+    function updateMatchInfo() {
+      if (matches.length === 0) {
+        matchInfo.textContent = searchInput.value.trim() ? '0/0' : '';
+      } else {
+        matchInfo.textContent = `${currentMatch + 1}/${matches.length}`;
+      }
+    }
+
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (matches.length === 0) return;
+      currentMatch = (currentMatch + 1) % matches.length;
+      updateMatchInfo();
+      scrollToMatch(currentMatch);
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (matches.length === 0) return;
+      currentMatch = (currentMatch - 1 + matches.length) % matches.length;
+      updateMatchInfo();
+      scrollToMatch(currentMatch);
+    });
+  </script>
+</Layout>

@@ -1,23 +1,94 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import '../styles/global.css';
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+interface Props {
+  title?: string;
+  description?: string;
+  pageBg?: string;
+}
+
+const { 
+  title = '导航站', 
+  description = '个人站点导航中心 - 聚合子站点、文档、工具与小游戏',
+  pageBg
+} = Astro.props;
+
+const navItems = [
+  { label: '首页', href: '/' },
+  { label: '公告', href: '/docs' },
+];
+
+const currentPath = Astro.url.pathname;
+
+// Check if background images exist (build-time only)
+const hasPageBg = false;
+const hasHeroBg = false;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <style is:global>
+      :root {
+        --page-bg: none;
+        --hero-bg: none;
+      }
+    </style>
+  </head>
+  <body class={`min-h-screen flex flex-col ${pageBg ? 'bg-page' : ''}`} style={pageBg ? `--page-bg: url('${pageBg}')` : undefined}>
+    <header class="sticky top-0 z-50 glass">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between h-14">
+          <a href="/" class="flex items-center gap-2 text-lg font-bold text-text hover:text-primary transition-colors">
+            <!-- Logo image -->
+            <img 
+              src="/images/logo/nav-logo.webp" 
+              alt="logo" 
+              class="w-7 h-7 rounded-md object-cover"
+              onerror="this.style.display='none'"
+            />
+            <span>导航站</span>
+          </a>
+          <nav class="flex items-center gap-1">
+            {navItems.map(item => {
+              const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
+              return (
+                <a
+                  href={item.href}
+                  class={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-text-muted hover:text-text hover:bg-surface-alt'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 relative z-10">
+      <slot />
+    </main>
+
+    <footer class="glass border-t-0 relative z-10">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-muted">
+          <p> 导航站 · 使用 Astro + Tailwind CSS 构建</p>
+          <div class="flex items-center gap-4">
+            <a href="/docs" class="hover:text-primary transition-colors">公告中心</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

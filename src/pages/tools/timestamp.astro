@@ -1,0 +1,286 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="时间戳转换 | 工具聚合" description="时间戳与日期时间互转，支持本地时间和国际时间">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-8">
+      <a href="/tools" class="text-sm text-primary hover:text-primary-dark font-medium mb-4 inline-block">
+        ← 返回工具聚合
+      </a>
+      <h1 class="text-3xl font-bold text-text mb-3">时间戳转换</h1>
+      <p class="text-text-muted">时间戳与日期时间互转，支持本地时间和 UTC 国际时间</p>
+    </div>
+
+    <div class="space-y-8">
+      <!-- Current Time Display -->
+      <div class="p-5 rounded-xl border-2 border-border bg-white space-y-3">
+        <h2 class="text-sm font-medium text-text">当前时间</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="p-3 rounded-lg bg-surface-alt">
+            <p class="text-xs text-text-muted mb-1">毫秒时间戳</p>
+            <p id="currentMs" class="text-lg font-mono font-semibold text-text">-</p>
+          </div>
+          <div class="p-3 rounded-lg bg-surface-alt">
+            <p class="text-xs text-text-muted mb-1">秒时间戳</p>
+            <p id="currentS" class="text-lg font-mono font-semibold text-text">-</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timestamp to Date -->
+      <div class="p-5 rounded-xl border-2 border-border bg-white space-y-4">
+        <h2 class="text-sm font-medium text-text flex items-center gap-2">
+          <span class="w-1 h-4 bg-primary rounded-full"></span>
+          时间戳 → 日期时间
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="tsInput"
+            type="text"
+            placeholder="输入秒或毫秒时间戳"
+            class="flex-1 px-4 py-2.5 rounded-lg border-2 border-border font-mono text-sm focus:border-primary focus:outline-none"
+          />
+          <select
+            id="tsUnit"
+            class="px-4 py-2.5 rounded-lg border-2 border-border text-sm focus:border-primary focus:outline-none bg-white"
+          >
+            <option value="auto">自动识别</option>
+            <option value="ms">毫秒 (ms)</option>
+            <option value="s">秒 (s)</option>
+          </select>
+          <button
+            id="tsConvertBtn"
+            class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors"
+          >
+            转换
+          </button>
+        </div>
+
+        <div id="tsResult" class="hidden space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 rounded-lg bg-surface-alt">
+              <p class="text-xs text-text-muted mb-1">本地时间</p>
+              <p id="localTime" class="text-sm font-mono text-text break-all">-</p>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-alt">
+              <p class="text-xs text-text-muted mb-1">UTC 国际时间</p>
+              <p id="utcTime" class="text-sm font-mono text-text break-all">-</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 rounded-lg bg-surface-alt">
+              <p class="text-xs text-text-muted mb-1">ISO 8601</p>
+              <p id="isoTime" class="text-sm font-mono text-text break-all">-</p>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-alt">
+              <p class="text-xs text-text-muted mb-1">RFC 2822</p>
+              <p id="rfcTime" class="text-sm font-mono text-text break-all">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date to Timestamp -->
+      <div class="p-5 rounded-xl border-2 border-border bg-white space-y-4">
+        <h2 class="text-sm font-medium text-text flex items-center gap-2">
+          <span class="w-1 h-4 bg-primary rounded-full"></span>
+          日期时间 → 时间戳
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="dateInput"
+            type="datetime-local"
+            step="1"
+            class="flex-1 px-4 py-2.5 rounded-lg border-2 border-border text-sm focus:border-primary focus:outline-none"
+          />
+          <button
+            id="dateConvertBtn"
+            class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors"
+          >
+            转换
+          </button>
+          <button
+            id="nowBtn"
+            class="px-5 py-2.5 rounded-lg bg-white text-text border-2 border-border text-sm font-medium hover:border-primary transition-colors"
+          >
+            现在
+          </button>
+        </div>
+
+        <div id="dateResult" class="hidden space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 rounded-lg bg-surface-alt flex items-center justify-between">
+              <div>
+                <p class="text-xs text-text-muted mb-1">毫秒时间戳</p>
+                <p id="dateMs" class="text-lg font-mono font-semibold text-text">-</p>
+              </div>
+              <button data-target="dateMs" class="copy-ts-btn text-xs text-primary hover:text-primary-dark font-medium">复制</button>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-alt flex items-center justify-between">
+              <div>
+                <p class="text-xs text-text-muted mb-1">秒时间戳</p>
+                <p id="dateS" class="text-lg font-mono font-semibold text-text">-</p>
+              </div>
+              <button data-target="dateS" class="copy-ts-btn text-xs text-primary hover:text-primary-dark font-medium">复制</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Reference -->
+      <div class="p-5 rounded-xl border-2 border-border bg-white">
+        <h2 class="text-sm font-medium text-text mb-3">常用参考</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <button data-offset="0" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            现在
+          </button>
+          <button data-offset="3600000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1小时后
+          </button>
+          <button data-offset="86400000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1天后
+          </button>
+          <button data-offset="604800000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1周后
+          </button>
+          <button data-offset="-3600000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1小时前
+          </button>
+          <button data-offset="-86400000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1天前
+          </button>
+          <button data-offset="-604800000" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            1周前
+          </button>
+          <button data-offset="0" data-preset="startOfDay" class="quick-btn px-3 py-2 rounded-lg bg-surface-alt text-xs text-text hover:bg-border transition-colors">
+            今天零点
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const currentMs = document.getElementById('currentMs');
+    const currentS = document.getElementById('currentS');
+    const tsInput = document.getElementById('tsInput');
+    const tsUnit = document.getElementById('tsUnit');
+    const tsConvertBtn = document.getElementById('tsConvertBtn');
+    const tsResult = document.getElementById('tsResult');
+    const localTime = document.getElementById('localTime');
+    const utcTime = document.getElementById('utcTime');
+    const isoTime = document.getElementById('isoTime');
+    const rfcTime = document.getElementById('rfcTime');
+    const dateInput = document.getElementById('dateInput');
+    const dateConvertBtn = document.getElementById('dateConvertBtn');
+    const nowBtn = document.getElementById('nowBtn');
+    const dateResult = document.getElementById('dateResult');
+    const dateMs = document.getElementById('dateMs');
+    const dateS = document.getElementById('dateS');
+
+    function updateCurrent() {
+      const now = Date.now();
+      currentMs.textContent = now;
+      currentS.textContent = Math.floor(now / 1000);
+    }
+    updateCurrent();
+    setInterval(updateCurrent, 1000);
+
+    function formatDate(date) {
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+      });
+    }
+
+    function formatUTC(date) {
+      return date.toUTCString();
+    }
+
+    tsConvertBtn.addEventListener('click', () => {
+      const raw = tsInput.value.trim();
+      if (!raw) return;
+      const num = parseFloat(raw);
+      if (isNaN(num)) {
+        tsResult.classList.add('hidden');
+        return;
+      }
+
+      let ms;
+      const unit = tsUnit.value;
+      if (unit === 'ms') {
+        ms = num;
+      } else if (unit === 's') {
+        ms = num * 1000;
+      } else {
+        // auto: if number is too small for ms, treat as seconds
+        ms = num < 1e10 ? num * 1000 : num;
+      }
+
+      const date = new Date(ms);
+      if (isNaN(date.getTime())) {
+        tsResult.classList.add('hidden');
+        return;
+      }
+
+      localTime.textContent = formatDate(date);
+      utcTime.textContent = formatUTC(date);
+      isoTime.textContent = date.toISOString();
+      rfcTime.textContent = date.toUTCString();
+      tsResult.classList.remove('hidden');
+    });
+
+    dateConvertBtn.addEventListener('click', () => {
+      const val = dateInput.value;
+      if (!val) return;
+      const date = new Date(val);
+      if (isNaN(date.getTime())) {
+        dateResult.classList.add('hidden');
+        return;
+      }
+      const ms = date.getTime();
+      dateMs.textContent = ms;
+      dateS.textContent = Math.floor(ms / 1000);
+      dateResult.classList.remove('hidden');
+    });
+
+    nowBtn.addEventListener('click', () => {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      dateInput.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      dateConvertBtn.click();
+    });
+
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const offset = parseInt(btn.dataset.offset);
+        let date;
+        if (btn.dataset.preset === 'startOfDay') {
+          const d = new Date();
+          d.setHours(0, 0, 0, 0);
+          date = d;
+        } else {
+          date = new Date(Date.now() + offset);
+        }
+        tsInput.value = date.getTime();
+        tsUnit.value = 'ms';
+        tsConvertBtn.click();
+      });
+    });
+
+    document.querySelectorAll('.copy-ts-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const target = document.getElementById(btn.dataset.target);
+        if (!target) return;
+        try {
+          await navigator.clipboard.writeText(target.textContent);
+          const original = btn.textContent;
+          btn.textContent = '已复制';
+          setTimeout(() => btn.textContent = original, 1500);
+        } catch {}
+      });
+    });
+  </script>
+</Layout>

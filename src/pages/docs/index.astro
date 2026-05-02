@@ -1,0 +1,118 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allDocs = await getCollection('docs', doc => !doc.data.draft);
+allDocs.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const announcements = allDocs.filter(d => d.data.category === 'announcement');
+const changelogs = allDocs.filter(d => d.data.category === 'changelog');
+---
+
+<Layout title="公告中心 | 导航站" description="网站通知公告与更新日志">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-text mb-3">公告中心</h1>
+      <p class="text-text-muted">浏览网站通知公告与版本更新日志</p>
+    </div>
+
+    <!-- 通知公告 -->
+    <section class="mb-14">
+      <h2 class="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-red-500 rounded-full"></span>
+        通知公告
+      </h2>
+      {announcements.length > 0 ? (
+        <div class="space-y-4">
+          {announcements.map(doc => (
+            <a
+              href={`/docs/${doc.id}`}
+              class="block p-5 rounded-xl border border-border bg-white hover:border-red-300 hover:shadow-sm transition-all"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h3 class="text-lg font-semibold text-text">
+                      {doc.data.title}
+                    </h3>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium shrink-0 bg-red-50 text-red-600">
+                      公告
+                    </span>
+                  </div>
+                  {doc.data.description && (
+                    <p class="text-sm text-text-muted line-clamp-2">
+                      {doc.data.description}
+                    </p>
+                  )}
+                </div>
+                <time class="text-xs text-text-muted whitespace-nowrap shrink-0">
+                  {doc.data.date.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="p-8 rounded-xl border border-dashed border-border bg-white text-center">
+          <p class="text-text-muted">暂无通知公告</p>
+        </div>
+      )}
+    </section>
+
+    <!-- 更新日志 -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-text flex items-center gap-2">
+          <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+          更新日志
+        </h2>
+        <a href="/changelog" class="text-sm text-primary hover:text-primary-dark font-medium">
+          查看全部 →
+        </a>
+      </div>
+      {changelogs.length > 0 ? (
+        <div class="relative border-l-2 border-blue-200 ml-3 space-y-8">
+          {changelogs.map(doc => (
+            <div class="relative pl-8">
+              <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm"></div>
+              <a href={`/docs/${doc.id}`} class="group block p-5 rounded-xl border border-border bg-white hover:border-blue-300 hover:shadow-sm transition-all -ml-2 sm:-ml-2">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-3 mb-2">
+                      <h3 class="text-lg font-semibold text-text group-hover:text-primary transition-colors">
+                        {doc.data.title}
+                      </h3>
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium shrink-0 bg-blue-50 text-blue-600">
+                        更新
+                      </span>
+                    </div>
+                    {doc.data.description && (
+                      <p class="text-sm text-text-muted line-clamp-2">
+                        {doc.data.description}
+                      </p>
+                    )}
+                  </div>
+                  <time class="text-xs text-text-muted whitespace-nowrap shrink-0">
+                    {doc.data.date.toLocaleDateString('zh-CN', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="p-8 rounded-xl border border-dashed border-border bg-white text-center">
+          <p class="text-text-muted">暂无更新日志</p>
+        </div>
+      )}
+    </section>
+  </div>
+</Layout>

@@ -1,11 +1,243 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const externalSites = [
+  {
+    title: '子站点',
+    url: 'https://xn--dxt.xn--ces63ha5737a.top',
+    description: '主内容站点，提供核心业务与功能服务',
+    icon: '🏠',
+    color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]',
+    iconBg: 'bg-blue-100/30 text-blue-600',
+  },
+  {
+    title: '文档站',
+    url: 'https://xn--7dvp7d.xn--ces63ha5737a.top',
+    description: '详细技术文档、使用指南与 API 参考手册',
+    icon: '📚',
+    color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]',
+    iconBg: 'bg-emerald-100/30 text-emerald-600',
+  },
+  {
+    title: '聚合工具',
+    url: '/tools',
+    description: '本站聚合的实用工具与小游戏',
+    icon: '🔧',
+    color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]',
+    iconBg: 'bg-amber-100/30 text-amber-600',
+    isInternal: true,
+  },
+];
+
+const thirdPartySites = [
+  { name: 'GitHub', url: 'https://github.com', icon: '💻', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-gray-100/30 text-gray-700' },
+  { name: 'Hugging Face', url: 'https://huggingface.co', icon: '🤗', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-yellow-100/30 text-yellow-700' },
+  { name: 'Civitai', url: 'https://civitai.com', icon: '🎨', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-green-100/30 text-green-700' },
+  { name: 'ChatGPT', url: 'https://chatgpt.com', icon: '💬', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-teal-100/30 text-teal-700' },
+  { name: 'Cloudflare', url: 'https://dash.cloudflare.com', icon: '☁️', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-orange-100/30 text-orange-700' },
+  { name: 'Spaceship', url: 'https://www.spaceship.com', icon: '🚀', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-indigo-100/30 text-indigo-700' },
+  { name: '阿里云', url: 'https://www.aliyun.com', icon: '☁️', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-red-100/30 text-red-700' },
+  { name: '逗老板', url: 'https://www.doulaoban.com', icon: '😄', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-pink-100/30 text-pink-700' },
+  { name: 'Qoph', url: 'https://1.qoph.fun', icon: '🔗', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-cyan-100/30 text-cyan-700' },
+  { name: 'Bitiful', url: 'https://www.bitiful.com', icon: '✨', color: 'glass-thin hover:scale-[1.02] active:scale-[0.98]', iconBg: 'bg-rose-100/30 text-rose-700' },
+];
+
+const allDocs = await getCollection('docs', doc => !doc.data.draft);
+allDocs.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const latestAnnouncements = allDocs.filter(d => d.data.category === 'announcement').slice(0, 2);
+const majorChangelogs = allDocs
+  .filter(d => d.data.category === 'changelog' && (d.data.level === 'major' || d.data.level === 'event'))
+  .slice(0, 2);
 ---
 
-<Layout>
-	<Welcome />
+<Layout pageBg="/images/backgrounds/hero-bg.webp">
+  <div class="-mt-[3.5rem] pt-[3.5rem]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center relative z-10">
+      <div class="glass rounded-3xl px-6 py-10 sm:px-12 sm:py-14 inline-block w-full max-w-3xl">
+        <!-- Avatar / Logo area -->
+        <div class="mb-6 flex justify-center">
+          <div class="relative">
+            <img
+              src="/images/avatars/site-avatar.webp"
+              alt="站点头像"
+              class="w-20 h-20 rounded-2xl object-cover border-2 border-white/60 shadow-lg"
+              onerror="this.style.display='none'"
+            />
+            <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white/60"></div>
+          </div>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-bold text-text mb-4">
+          欢迎来到导航站
+        </h1>
+        <p class="text-lg text-text-muted max-w-2xl mx-auto">
+          这里是所有子站点与服务的入口中心，快速访问你的站点与公告
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-16 relative z-10">
+    <!-- External Sites + 聚合工具 -->
+    <section class="glass rounded-3xl p-6 sm:p-8">
+      <h2 class="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+        子站点导航
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {externalSites.map(site => (
+          <a
+            href={site.url}
+            target={site.isInternal ? undefined : '_blank'}
+            rel={site.isInternal ? undefined : 'noopener noreferrer'}
+            class={`group block p-6 rounded-xl border-2 transition-all duration-200 ${site.color}`}
+          >
+            <div class={`inline-flex items-center justify-center w-12 h-12 rounded-lg text-2xl mb-4 ${site.iconBg}`}>
+              {site.icon}
+            </div>
+            <h3 class="text-lg font-semibold text-text mb-2 group-hover:text-primary transition-colors">
+              {site.title}
+            </h3>
+            <p class="text-sm text-text-muted leading-relaxed">
+              {site.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Latest Announcements -->
+    <section class="glass rounded-3xl p-6 sm:p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-text flex items-center gap-2">
+          <span class="w-1.5 h-6 bg-red-500 rounded-full"></span>
+          最新公告
+        </h2>
+        <a href="/docs" class="text-sm text-primary hover:text-primary-dark font-medium">
+          查看全部 →
+        </a>
+      </div>
+      {latestAnnouncements.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {latestAnnouncements.map(doc => (
+            <a
+              href={`/docs/${doc.id}`}
+              class="block p-5 rounded-xl glass-thin hover:border-white/60 hover:shadow-sm transition-all"
+            >
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-600">
+                  公告
+                </span>
+                <time class="text-xs text-text-muted">
+                  {doc.data.date.toLocaleDateString('zh-CN')}
+                </time>
+              </div>
+              <h3 class="font-semibold text-text mb-1">
+                {doc.data.title}
+              </h3>
+              {doc.data.description && (
+                <p class="text-sm text-text-muted line-clamp-2">
+                  {doc.data.description}
+                </p>
+              )}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-text-muted">暂无公告</p>
+      )}
+    </section>
+
+    <!-- Third Party Sites -->
+    <section class="glass rounded-3xl p-6 sm:p-8">
+      <h2 class="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+        第三方站点
+      </h2>
+      <div id="third-party-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {thirdPartySites.map(site => (
+          <a
+            href={site.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-url={site.url}
+            class={`group flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 ${site.color}`}
+          >
+            <div class={`inline-flex items-center justify-center w-9 h-9 rounded-lg text-lg shrink-0 ${site.iconBg}`}>
+              {site.icon}
+            </div>
+            <span class="text-sm font-medium text-text group-hover:text-primary transition-colors truncate">
+              {site.name}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Changelog Timeline (major only, max 2) -->
+    {majorChangelogs.length > 0 && (
+      <section class="glass rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-text flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+            更新日志
+          </h2>
+          <a href="/changelog" class="text-sm text-primary hover:text-primary-dark font-medium">
+            查看全部 →
+          </a>
+        </div>
+        <div class="relative border-l-2 border-blue-200 ml-3 space-y-8">
+          {majorChangelogs.map(doc => (
+            <div class="relative pl-8">
+              <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm"></div>
+              <a href={`/docs/${doc.id}`} class="group block">
+                <time class="text-sm text-text-muted">
+                  {doc.data.date.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+                <h3 class="font-semibold text-text mt-1 group-hover:text-primary transition-colors">
+                  {doc.data.title}
+                </h3>
+                {doc.data.description && (
+                  <p class="text-sm text-text-muted mt-1 line-clamp-2">
+                    {doc.data.description}
+                  </p>
+                )}
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <script>
+    (function() {
+      const STORAGE_KEY = 'lastThirdPartySite';
+      const grid = document.getElementById('third-party-grid');
+      if (!grid) return;
+
+      // 页面加载时：将上次点击的站点前置到第一位
+      const lastVisited = localStorage.getItem(STORAGE_KEY);
+      if (lastVisited) {
+        const cards = Array.from(grid.children);
+        const idx = cards.findIndex(c => c.getAttribute('data-url') === lastVisited);
+        if (idx > 0) {
+          grid.insertBefore(cards[idx], cards[0]);
+        }
+      }
+
+      // 点击时记录到 localStorage
+      grid.addEventListener('click', function(e) {
+        const card = e.target.closest('[data-url]');
+        if (card) {
+          localStorage.setItem(STORAGE_KEY, card.getAttribute('data-url'));
+        }
+      });
+    })();
+  </script>
 </Layout>

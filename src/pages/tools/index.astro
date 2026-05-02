@@ -1,0 +1,129 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const tools = [
+  {
+    title: 'Base64 编解码',
+    description: '快速进行 Base64 字符串编码与解码，支持中文',
+    icon: '🔐',
+    href: '/tools/base64',
+    status: 'done',
+  },
+  {
+    title: 'JSON 格式化',
+    description: '美化、压缩、转义与校验 JSON 数据',
+    icon: '📋',
+    href: '/tools/json',
+    status: 'done',
+  },
+  {
+    title: '密码生成器',
+    description: '生成强安全随机密码，支持自定义长度与字符类型',
+    icon: '🔑',
+    href: '/tools/password',
+    status: 'done',
+  },
+  {
+    title: '颜色转换器',
+    description: 'HEX、RGB、HSL 颜色格式互转，实时预览与调色盘',
+    icon: '🎨',
+    href: '/tools/color',
+    status: 'done',
+  },
+  {
+    title: '时间戳转换',
+    description: '时间戳与日期时间互转，支持本地时间和 UTC 国际时间',
+    icon: '🕐',
+    href: '/tools/timestamp',
+    status: 'done',
+  },
+];
+
+const games = [
+  {
+    title: '贪吃蛇',
+    description: '经典贪吃蛇小游戏',
+    icon: '🐍',
+    href: '#snake',
+    status: 'planned',
+  },
+  {
+    title: '2048',
+    description: '数字合成益智游戏',
+    icon: '🔢',
+    href: '#2048',
+    status: 'planned',
+  },
+];
+---
+
+<Layout title="工具聚合 | 导航站" description="实用工具与小游戏聚合">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-text mb-3">工具聚合</h1>
+      <p class="text-text-muted">纯前端实用工具与轻量小游戏，无需后端即可使用</p>
+    </div>
+
+    <!-- Tools Section -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+        实用工具
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {tools.map(tool => (
+          <a
+            href={tool.href}
+            class="group relative p-5 rounded-xl border-2 border-border bg-white hover:border-primary/40 hover:shadow-sm transition-all"
+          >
+            <div class="flex items-start gap-4">
+              <div class="text-3xl">{tool.icon}</div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-text mb-1 group-hover:text-primary transition-colors">{tool.title}</h3>
+                <p class="text-sm text-text-muted">{tool.description}</p>
+              </div>
+            </div>
+            {tool.status === 'planned' && (
+              <span class="absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200">
+                规划中
+              </span>
+            )}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Games Section -->
+    <section>
+      <h2 class="text-xl font-semibold text-text mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+        小游戏
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {games.map(game => (
+          <div class="group relative p-5 rounded-xl border-2 border-border bg-white">
+            <div class="flex items-start gap-4">
+              <div class="text-3xl">{game.icon}</div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-text mb-1">{game.title}</h3>
+                <p class="text-sm text-text-muted">{game.description}</p>
+              </div>
+            </div>
+            {game.status === 'planned' && (
+              <span class="absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200">
+                规划中
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Add Tool Hint -->
+    <div class="mt-12 p-6 rounded-xl border border-dashed border-border bg-surface-alt text-center">
+      <p class="text-text-muted text-sm">
+        💡 想要添加新工具？在 <code class="px-1.5 py-0.5 rounded bg-white text-primary font-mono text-xs">src/pages/tools/</code> 目录下创建新的 .astro 页面即可
+      </p>
+    </div>
+  </div>
+</Layout>

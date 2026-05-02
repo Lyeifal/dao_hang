@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs', doc => !doc.data.draft);
+  return docs.map(doc => ({
+    params: { slug: doc.id },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+
+const categoryLabels: Record<string, string> = {
+  announcement: '公告',
+  changelog: '更新日志',
+  guide: '使用指南',
+};
+
+const categoryColors: Record<string, string> = {
+  announcement: 'bg-red-50 text-red-600',
+  changelog: 'bg-blue-50 text-blue-600',
+  guide: 'bg-gray-50 text-gray-600',
+};
+---
+
+<Layout title={`${doc.data.title} | 文档中心`} description={doc.data.description}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-text-muted mb-8">
+      <a href="/" class="hover:text-primary transition-colors">首页</a>
+      <span>/</span>
+      <a href="/docs" class="hover:text-primary transition-colors">文档</a>
+      <span>/</span>
+      <span class="text-text truncate max-w-[200px]">{doc.data.title}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="mb-10">
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <span class={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${categoryColors[doc.data.category]}`}>
+          {categoryLabels[doc.data.category]}
+        </span>
+        <time class="text-sm text-text-muted">
+          {doc.data.date.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </time>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-text mb-3">
+        {doc.data.title}
+      </h1>
+      {doc.data.description && (
+        <p class="text-lg text-text-muted">
+          {doc.data.description}
+        </p>
+      )}
+    </header>
+
+    <!-- Content -->
+    <article class="prose max-w-none">
+      <Content />
+    </article>
+
+    <!-- Footer Nav -->
+    <div class="mt-12 pt-8 border-t border-border">
+      <a
+        href="/docs"
+        class="inline-flex items-center text-sm text-primary hover:text-primary-dark font-medium transition-colors"
+      >
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        返回文档列表
+      </a>
+    </div>
+  </div>
+</Layout>
